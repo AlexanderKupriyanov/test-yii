@@ -22,7 +22,7 @@ return array(
 		// uncomment the following to enable the Gii tool
 		'gii'=>array(
 			'class'=>'system.gii.GiiModule',
-			'password'=>'1',
+			'password'=>'admin',
 			// If removed, Gii defaults to localhost only. Edit carefully to taste.
 			'ipFilters'=>array('127.0.0.1','::1'),
 		),
@@ -53,7 +53,8 @@ return array(
 
 		'errorHandler'=>array(
 			// use 'site/error' action to display errors
-			'errorAction'=>'site/error',
+			// 'errorAction'=>'site/error',
+            'discardOutput'=>false
 		),
 
 		'log'=>array(
@@ -61,14 +62,24 @@ return array(
 			'routes'=>array(
 				array(
 					'class'=>'CFileLogRoute',
-					'levels'=>'error, warning',
 				),
-				// uncomment the following to show log messages on web pages
-				/*
 				array(
 					'class'=>'CWebLogRoute',
+                    'levels'=>'error, warning',
 				),
-				*/
+                array(
+                    'class'=>'CProfileLogRoute',
+                    'report'=>'summary',
+                    'levels'=>'profile',
+                    'enabled'=>false,
+                ),
+                array(
+                    'class' => 'CEmailLogRoute',
+                    'emails' => array('mainres07@gmail.com'),
+                    'sentFrom' => 'error@yiiframework.ru',
+                    'subject' => 'Error at YiiFramework.ru'
+                ),
+
 			),
 		),
 
@@ -78,6 +89,6 @@ return array(
 	// using Yii::app()->params['paramName']
 	'params'=>array(
 		// this is used in contact page
-		'adminEmail'=>'webmaster@example.com',
+		'adminEmail'=>'mainres07@gmail.com',
 	),
 );
