@@ -28,6 +28,9 @@ class SiteController extends Controller
 	 */
 	public function actionIndex()
 	{
+        //echo 345;
+        //echo $wer['123'] + 2;
+        //echo 123;
 		// renders the view file 'protected/views/site/index.php'
 		// using the default layout 'protected/views/layouts/main.php'
 		$this->render('index');
@@ -72,6 +75,19 @@ class SiteController extends Controller
 		}
 		$this->render('contact',array('model'=>$model));
 	}
+
+    /**
+     * Displays the order page
+     */
+    public function actionOrder()
+    {
+        $model = new OrderForm;
+        $form = new CForm('application.views.site.orderForm', $model);
+        if($form->submitted('order') && $form->validate())
+            $this->redirect(array('site/index'));
+        else
+            $this->render('order', array('form'=>$form));
+    }
 
 	/**
 	 * Displays the login page

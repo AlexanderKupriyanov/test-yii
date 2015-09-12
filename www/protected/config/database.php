@@ -10,5 +10,9 @@ return array(
 	'username' => 'root',
 	'password' => '',
 	'charset' => 'utf8',
+    // включаем профайлер
+    'enableProfiling'=>true,
+    // показываем значения параметров
+    'enableParamLogging' => true,
 
 );
