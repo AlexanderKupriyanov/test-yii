@@ -15,6 +15,7 @@ return array(
 	// autoloading model and component classes
 	'import'=>array(
 		'application.models.*',
+        'application.myclasses.*',
 		'application.components.*',
 	),
 
@@ -26,6 +27,9 @@ return array(
 			// If removed, Gii defaults to localhost only. Edit carefully to taste.
 			'ipFilters'=>array('127.0.0.1','::1'),
 		),
+        'forum' => array(
+            'postPerPage' => '123'
+        )
 	),
 
 	// application components
@@ -65,7 +69,7 @@ return array(
 				),
 				array(
 					'class'=>'CWebLogRoute',
-                    'levels'=>'error, warning',
+                    //'levels'=>'error, warning',
 				),
                 array(
                     'class'=>'CProfileLogRoute',

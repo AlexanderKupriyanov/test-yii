@@ -14,6 +14,8 @@
  */
 class TblProfile extends CActiveRecord
 {
+    public $verifyCode;
+
 	/**
 	 * @return string the associated database table name
 	 */
@@ -31,12 +33,21 @@ class TblProfile extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('user_id, gender, website', 'required'),
-			array('user_id, gender, website', 'numerical', 'integerOnly'=>true),
+			array('user_id, gender', 'numerical', 'integerOnly'=>true),
+            array('website', 'url', 'allowEmpty'=>true),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
 			array('id, user_id, gender, website', 'safe', 'on'=>'search'),
+            array('verifyCode', 'captcha', 'allowEmpty'=>!CCaptcha::checkRequirements()),
 		);
 	}
+
+    public function getGenderOptions () {
+        return array (
+            '1' => '男性',
+            '2' => '女性'
+        );
+    }
 
 	/**
 	 * @return array relational rules.
@@ -46,7 +57,7 @@ class TblProfile extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'user' => array(self::BELONGS_TO, 'TblUser', 'user_id'),
+			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
 		);
 	}
 
