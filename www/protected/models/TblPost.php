@@ -1,22 +1,23 @@
 <?php
 
 /**
- * This is the model class for table "tbl_user".
+ * This is the model class for table "tbl_post".
  *
- * The followings are the available columns in table 'tbl_user':
+ * The followings are the available columns in table 'tbl_post':
  * @property integer $id
- * @property string $username
- * @property string $password
- * @property string $email
+ * @property string $title
+ * @property string $content
+ * @property string $create_time
+ * @property integer $author_id
  */
-class User extends CActiveRecord
+class TblPost extends CActiveRecord
 {
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'tbl_user';
+		return 'tbl_post';
 	}
 
 	/**
@@ -27,13 +28,28 @@ class User extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('username, password, email', 'required'),
-			array('username, password, email', 'length', 'max'=>128),
+			array('title, content, create_time, author_id', 'required'),
+			array('author_id', 'numerical', 'integerOnly'=>true),
+			array('title', 'length', 'max'=>100),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, username, password, email', 'safe', 'on'=>'search'),
+			array('id, title, content, create_time, author_id', 'safe', 'on'=>'search'),
 		);
 	}
+
+	/**
+	 * @return array relational rules.
+	 */
+    public function relations()
+    {
+        return array(
+            'author'=>array(self::BELONGS_TO, 'User', 'author_id'),
+            'categories'=>array(self::MANY_MANY, 'TblCategory',
+                'tbl_rel_post_category(post_id, category_id)'),
+            'categoryCount'=>array(self::STAT, 'TblCategory',
+                'tbl_rel_post_category(post_id, category_id)'),
+        );
+    }
 
 	/**
 	 * @return array customized attribute labels (name=>label)
@@ -42,9 +58,10 @@ class User extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'username' => 'Username',
-			'password' => 'Password',
-			'email' => 'Email',
+			'title' => 'Title',
+			'content' => 'Content',
+			'create_time' => 'Create Time',
+			'author_id' => 'Author',
 		);
 	}
 
@@ -67,51 +84,24 @@ class User extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('username',$this->username,true);
-		$criteria->compare('password',$this->password,true);
-		$criteria->compare('email',$this->email,true);
+		$criteria->compare('title',$this->title,true);
+		$criteria->compare('content',$this->content,true);
+		$criteria->compare('create_time',$this->create_time,true);
+		$criteria->compare('author_id',$this->author_id);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
 	}
 
-    /**
-     * @return array relational rules.
-     */
-    public function relations()
-    {
-        // NOTE: you may need to adjust the relation name and the related
-        // class name for the relations automatically generated below.
-        return array(
-            'posts'=>array(self::HAS_MANY, 'TblPost', 'author_id', 'order' => 'posts.create_time DESC', 'with' => 'categories'),
-            'profile'=>array(self::HAS_ONE, 'TblProfile', 'user_id'),
-        );
-    }
-
 	/**
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return User the static model class
+	 * @return TblPost the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
 		return parent::model($className);
 	}
-
-    /**
-     * Password hashing
-     * @return bool
-     */
-    protected function beforeSave()
-    {
-        if (parent::beforeSave()) {
-            if ($this->isNewRecord) {
-                $this->password = CPasswordHelper::hashPassword($this->password);
-            }
-            return true;
-        } else
-            return false;
-    }
 }

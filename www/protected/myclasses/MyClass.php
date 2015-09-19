@@ -16,4 +16,11 @@ class MyClass extends CComponent {
         $this->raiseEvent('onRun', $event);
     }
 
+    static function dump($var) {
+        echo '<pre>'; print_r($var); echo '</pre>';
+        echo "<br>================================</br>";
+        echo '<pre>'; var_dump($var); echo '</pre>';
+    }
+
+
 }
