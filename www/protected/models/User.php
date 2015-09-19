@@ -97,4 +97,19 @@ class User extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+
+    /**
+     * Password hashing
+     * @return bool
+     */
+    protected function beforeSave()
+    {
+        if (parent::beforeSave()) {
+            if ($this->isNewRecord) {
+                $this->password = CPasswordHelper::hashPassword($this->password);
+            }
+            return true;
+        } else
+            return false;
+    }
 }
