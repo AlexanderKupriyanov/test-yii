@@ -2,6 +2,14 @@
 
 class SiteController extends Controller
 {
+
+    public function filters()
+    {
+        return array(
+            'accessControl', // perform access control for CRUD operations
+            'ajaxOnly + profileAjax', // we only allow deletion via POST request
+        );
+    }
     
 	/**
 	 * Declares class-based actions.
@@ -115,6 +123,42 @@ class SiteController extends Controller
 		$this->render('login',array('model'=>$model));
 	}
 
+    /**
+     * Displays the profile page
+     */
+    public function actionProfile()
+    {
+        if (!$model = TblProfile::model()->findByAttributes(array('user_id' => Yii::app()->user->getId()))) {
+            $model = new TblProfile;
+        }
+
+        if(isset($_POST['TblProfile'])) {
+            $model->attributes = $_POST['TblProfile'];
+            $model->setAttribute('user_id', Yii::app()->user->getId());
+            if($model->validate())
+            {
+                // form inputs are valid, do something here
+                $model->save();
+            }
+        }
+
+        $this->render('profile',array('model'=>$model));
+    }
+
+    public function actionProfileAjax()
+    {
+        if (!$model = TblProfile::model()->findByAttributes(array('user_id' => Yii::app()->user->getId()))) {
+            $model = new TblProfile;
+        }
+
+        // uncomment the following code to enable ajax-based validation
+        if(isset($_POST['ajax']) && $_POST['ajax']==='tbl-profile-profile-form')
+        {
+            echo CActiveForm::validate($model);
+            Yii::app()->end();
+        }
+    }
+
 	/**
 	 * Logs out the current user and redirect to homepage.
 	 */
@@ -123,4 +167,5 @@ class SiteController extends Controller
 		Yii::app()->user->logout();
 		$this->redirect(Yii::app()->homeUrl);
 	}
+
 }
