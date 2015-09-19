@@ -1,4 +1,4 @@
-<h1>Вход</h1>
+<h1>Заказ</h1>
 
 <div class="form">
     <?php echo $form; ?>

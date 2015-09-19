@@ -69,7 +69,7 @@ return array(
 				),
 				array(
 					'class'=>'CWebLogRoute',
-                    'levels'=>'error, warning',
+                    //'levels'=>'error, warning',
 				),
                 array(
                     'class'=>'CProfileLogRoute',

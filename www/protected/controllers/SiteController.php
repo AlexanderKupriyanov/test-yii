@@ -159,6 +159,19 @@ class SiteController extends Controller
         }
     }
 
+    public function actionPosts()
+    {
+        //$post = TblPost::model()->findByPk(1);
+        //$author = $post->categories;
+        // print_r($author);
+
+        $posts = TblPost::model()->with(array('author.profile', 'categories'=>array('together' => false)))->findAll();
+        MyClass::dump($posts);
+        //$count = TblPost::model()->with('categoryCount')->findAll();
+
+        //$this->render('posts',array('model'=>$posts));
+    }
+
 	/**
 	 * Logs out the current user and redirect to homepage.
 	 */

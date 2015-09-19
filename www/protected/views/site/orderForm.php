@@ -7,14 +7,13 @@
  */
 
 return array(
-    'title'=>'ログインの証明となる情報を入力してください',
+    'title'=>'Группа полей',
 
     'elements'=>array(
         'date'=>array(
             'type'=>'text',
             'maxlength'=>32,
         ),
-        '<hr>',
         'quantity'=>array(
             'type'=>'text',
             'maxlength'=>32,
@@ -24,10 +23,11 @@ return array(
             'items'=>Delivery::model()->getDeliveryOptions(),
             'prompt'=>'Выберите значение:',
         ),
+        '<hr>',
     ),
 
     'buttons'=>array(
-        'submit'=>array(
+        'order'=>array(
             'type'=>'submit',
             'label'=>'Submit',
         ),
