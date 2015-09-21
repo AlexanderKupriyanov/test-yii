@@ -11,7 +11,7 @@ defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL',3);
 
 // uncomment to view default php error messages + unconflicted
 //defined('YII_ENABLE_ERROR_HANDLER') or define('YII_ENABLE_ERROR_HANDLER',false);
-//tst 1 2
+//tst 1 2 5
 
 require_once($yii);
 Yii::createWebApplication($config)->run();
