@@ -23,7 +23,7 @@ class OrderForm extends CFormModel
 			array('date, quantity, delivery', 'required'),
 		);
 	}
-
+//sq 02
 	/**
 	 * Declares attribute labels.
 	 */
