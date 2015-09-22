@@ -36,3 +36,5 @@ class OrderForm extends CFormModel
 		);
 	}
 }
+
+//sq 03
