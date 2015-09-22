@@ -10,7 +10,7 @@ class OrderForm extends CFormModel
 	public $date;
 	public $quantity;
     public $delivery;
-
+//sq01
 	/**
 	 * Declares the validation rules.
 	 * The rules state that username and password are required,
