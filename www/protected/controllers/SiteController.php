@@ -3,11 +3,12 @@
 class SiteController extends Controller
 {
 
+    public $layout='//layouts/column2';
+
     public function filters()
     {
         return array(
             'accessControl', // perform access control for CRUD operations
-            'ajaxOnly + profileAjax', // we only allow deletion via POST request
         );
     }
     
@@ -63,6 +64,9 @@ class SiteController extends Controller
 	 */
 	public function actionContact()
 	{
+        //$value=$cookies[$name]->value; // reads a cookie value
+        //unset($cookies[$name]);  // removes a cookie
+
 		$model=new ContactForm;
 		if(isset($_POST['ContactForm']))
 		{
@@ -123,40 +127,68 @@ class SiteController extends Controller
 		$this->render('login',array('model'=>$model));
 	}
 
-    /**
-     * Displays the profile page
-     */
     public function actionProfile()
     {
-        if (!$model = TblProfile::model()->findByAttributes(array('user_id' => Yii::app()->user->getId()))) {
-            $model = new TblProfile;
-        }
+        YiiBase::beginProfile(1);
+        Yii::app()->user->setFlash('infomsg',"You now editing profile");
 
-        if(isset($_POST['TblProfile'])) {
+        $model = TblProfile::model()->with('photos')->findByAttributes(array('user_id' => Yii::app()->user->getId()));
+        if (!$model) {
+            $model = new TblProfile();
+        }
+        $model->setScenario('create');
+
+        MyClass::dump($model);
+
+        $img_add = new TblProfilePhotos();
+
+        // uncomment the following code to enable ajax-based validation
+        if(isset($_POST['ajax']) && $_POST['ajax']==='tbl-profile-profile-form') {
+            $model->setScenario('ajax');
+            echo CActiveForm::validate($model);
+            Yii::app()->end();
+        } elseif(isset($_POST['TblProfile'])) {
+            //MyClass::dump($_FILES); exit();
             $model->attributes = $_POST['TblProfile'];
             $model->setAttribute('user_id', Yii::app()->user->getId());
+
             if($model->validate())
             {
                 // form inputs are valid, do something here
                 $model->save();
             }
-        }
 
-        $this->render('profile',array('model'=>$model));
-    }
+            if ($_FILES['images']) {
+                $images = CUploadedFile::getInstancesByName('images');
 
-    public function actionProfileAjax()
-    {
-        if (!$model = TblProfile::model()->findByAttributes(array('user_id' => Yii::app()->user->getId()))) {
-            $model = new TblProfile;
-        }
+                foreach ($images as $img => $pic) {
+                    if ($pic->saveAs(Yii::getPathOfAlias('webroot').'/assets/files/'.$pic->name)) {
+                        $img_add = new TblProfilePhotos();
+                        $img_add->setAttribute('image', $pic);
+                        $img_add->setAttribute('name', $pic->name); //it might be $img_add->name for you, filename is just what I chose to call it in my model
+                        $img_add->setAttribute('profile_id', $model->id); // this links your picture model to the main model (like your user, or profile model)
+                        if($img_add->validate()){
+                            $img_add->save(); // DONE
+                        } else {
+                            break;
+                        }
+                    }
+                }
 
-        // uncomment the following code to enable ajax-based validation
-        if(isset($_POST['ajax']) && $_POST['ajax']==='tbl-profile-profile-form')
-        {
-            echo CActiveForm::validate($model);
-            Yii::app()->end();
+                /* вариант напрямик
+                $builder=Yii::app()->db->schema->commandBuilder;
+                $command=$builder->createMultipleInsertCommand('tbl_user_photos',
+                    array_map(function($arr){
+                        return array('name' => $arr, 'profile_id' => $model->attributes->id);
+                    }, $_FILES['TblProfile']['name']['photos'])
+                );
+                $command->execute();
+                */
+            }
         }
+        YiiBase::endProfile(1);
+
+        $this->render('profile',array('model'=>$model, 'photosModel'=>isset($img_add) ? $img_add : null));
     }
 
     public function actionPosts()
@@ -165,11 +197,78 @@ class SiteController extends Controller
         //$author = $post->categories;
         // print_r($author);
 
-        $posts = TblPost::model()->with(array('author.profile', 'categories'=>array('together' => false)))->findAll();
-        MyClass::dump($posts);
+        //$posts = TblPost::model()->with(array('author.profile', 'categories'=>array('together' => false)));
+        $count = TblPost::model()->with(array('author.profile', 'categories'=>array('together' => false)))->count();
+
+        //MyClass::dump($posts);
         //$count = TblPost::model()->with('categoryCount')->findAll();
 
-        //$this->render('posts',array('model'=>$posts));
+
+        $criteria = new CDbCriteria();
+        //$criteria->select = 'author.name as author_name';
+        $criteria->with[] = 'author.profile';
+        $criteria->with['categories'] = array('together' => false);
+
+        $pages=new CPagination($count);
+        $pages->pageSize=2;
+        //$pages->applyLimit($criteria);
+
+        $sort=new CSort;
+        $sort->modelClass='TblPost';
+        $sort->attributes=array('*');
+        $sort->attributes['author_username'] = array(
+            'asc'=>'author.username',
+            'desc'=>'author.username DESC',
+        );
+        $sort->separators=array(',','-');
+        $sort->applyOrder($criteria);
+
+
+        $dataProvider = new CActiveDataProvider(TblPost::model(),
+            array(
+                // можно передать $pages
+                'pagination'=>array(
+                    'pageSize'=>3,
+                    'pageVar'=>'page',
+                ),
+                'sort'=>$sort
+            )
+        );
+        $dataProvider->criteria = $criteria;
+
+        $model = TblPost::model()->setDbCriteria($criteria);
+
+        $this->render('posts',array(
+                'pages'=>$pages,
+                'dataProvider'=>$dataProvider,
+                'model'=>$model
+            )
+        );
+    }
+
+    public function actionPostForm()
+    {
+        $model=new TblPost;
+
+        // uncomment the following code to enable ajax-based validation
+        /*
+        if(isset($_POST['ajax']) && $_POST['ajax']==='tbl-post-postForm-form')
+        {
+            echo CActiveForm::validate($model);
+            Yii::app()->end();
+        }
+        */
+
+        if(isset($_POST['TblPost']))
+        {
+            $model->attributes=$_POST['TblPost'];
+            $model->setAttribute('author_id', Yii::app()->user->id);
+            if($model->validate())
+            {
+                $model->save();
+            }
+        }
+        $this->render('postForm',array('model'=>$model));
     }
 
 	/**

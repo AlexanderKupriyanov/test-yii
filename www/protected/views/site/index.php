@@ -18,3 +18,8 @@ $this->pageTitle=Yii::app()->name;
 the <a href="http://www.yiiframework.com/doc/">documentation</a>.
 Feel free to ask in the <a href="http://www.yiiframework.com/forum/">forum</a>,
 one two three should you have any questions. Test2. Task 2. Changes after. two</p>
+
+<?php
+
+
+?>

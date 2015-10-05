@@ -1,25 +1,22 @@
 <?php
 
 /**
- * This is the model class for table "tbl_post".
+ * This is the model class for table "tbl_user_photos".
  *
- * The followings are the available columns in table 'tbl_post':
+ * The followings are the available columns in table 'tbl_user_photos':
  * @property integer $id
- * @property string $title
- * @property string $content
- * @property string $create_time
- * @property integer $author_id
+ * @property integer $user_id
+ * @property string $name
  */
-class TblPost extends CActiveRecord
+class TblProfilePhotos extends CActiveRecord
 {
-    public $author_name;
-
+    public $image;
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'tbl_post';
+		return 'tbl_user_photos';
 	}
 
 	/**
@@ -30,38 +27,24 @@ class TblPost extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('title, content, author_id', 'required'),
-			array('author_id', 'numerical', 'integerOnly'=>true),
-			array('title', 'length', 'max'=>100),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, title, content, create_time, author_id', 'safe', 'on'=>'search'),
-            //array('content','filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
+			array('id, profile_id, name', 'safe', 'on'=>'search'),
+            array('image', 'file', 'types'=>'jpg, gif, png'),
 		);
 	}
-
-    public function behaviors(){
-        return array(
-            'CTimestampBehavior' => array(
-                'class' => 'zii.behaviors.CTimestampBehavior',
-                'createAttribute' => 'create_time',
-            )
-        );
-    }
 
 	/**
 	 * @return array relational rules.
 	 */
-    public function relations()
-    {
-        return array(
-            'author'=>array(self::BELONGS_TO, 'User', 'author_id'),
-            'categories'=>array(self::MANY_MANY, 'TblCategory',
-                'tbl_rel_post_category(post_id, category_id)'),
-            'categoryCount'=>array(self::STAT, 'TblCategory',
-                'tbl_rel_post_category(post_id, category_id)'),
-        );
-    }
+	public function relations()
+	{
+		// NOTE: you may need to adjust the relation name and the related
+		// class name for the relations automatically generated below.
+		return array(
+            'profile' => array(self::BELONGS_TO, 'TblProfile', 'profile_id'),
+		);
+	}
 
 	/**
 	 * @return array customized attribute labels (name=>label)
@@ -70,10 +53,8 @@ class TblPost extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'title' => 'Title',
-			'content' => 'Content',
-			'create_time' => 'Create Time',
-			'author_id' => 'Author',
+			'profile_id' => 'Profile',
+			'name' => 'Name',
 		);
 	}
 
@@ -96,10 +77,8 @@ class TblPost extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('title',$this->title,true);
-		$criteria->compare('content',$this->content,true);
-		$criteria->compare('create_time',$this->create_time,true);
-		$criteria->compare('author_id',$this->author_id);
+		$criteria->compare('profile_id',$this->profile_id);
+		$criteria->compare('name',$this->name,true);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -110,7 +89,7 @@ class TblPost extends CActiveRecord
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return TblPost the static model class
+	 * @return TblProfilePhotos the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{

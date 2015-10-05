@@ -6,6 +6,7 @@
 // This is the main Web application configuration. Any writable
 // CWebApplication properties can be configured here.
 return array(
+    //'theme'=>'listening',
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
 	'name'=>'My Web Application',
 
@@ -41,16 +42,15 @@ return array(
 		),
 
 		// uncomment the following to enable URLs in path-format
-		/*
 		'urlManager'=>array(
 			'urlFormat'=>'path',
+            'showScriptName' => false,
 			'rules'=>array(
 				'<controller:\w+>/<id:\d+>'=>'<controller>/view',
 				'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
 				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
 			),
 		),
-		*/
 
 		// database settings are configured in database.php
 		'db'=>require(dirname(__FILE__).'/database.php'),
@@ -74,8 +74,8 @@ return array(
                 array(
                     'class'=>'CProfileLogRoute',
                     'report'=>'summary',
-                    'levels'=>'profile',
-                    'enabled'=>false,
+                    //'levels'=>'profile',
+                    'enabled'=>true,
                 ),
                 array(
                     'class' => 'CEmailLogRoute',
