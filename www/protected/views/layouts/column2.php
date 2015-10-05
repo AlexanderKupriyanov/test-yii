@@ -5,6 +5,9 @@
 		<?php echo $content; ?>
 	</div><!-- content -->
 </div>
+
+<?php echo $this->clips['tstclp']; ?>
+
 <div class="span-5 last">
 	<div id="sidebar">
 	<?php
@@ -16,6 +19,8 @@
 			'htmlOptions'=>array('class'=>'operations'),
 		));
 		$this->endWidget();
+
+        $this->widget('UserMenu');
 	?>
 	</div><!-- sidebar -->
 </div>

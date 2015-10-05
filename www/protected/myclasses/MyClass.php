@@ -17,9 +17,20 @@ class MyClass extends CComponent {
     }
 
     static function dump($var) {
+        $highlighter = new CTextHighlighter;
+        $highlighter->language = 'PHP';
+        //echo $highlighter->highlight(print_r($var, true));
+
+        CVarDumper::dump($var,10,true);
+
+        //echo print_r($var, true);
+
+        //echo '<pre>' . $output . '</pre>';
+        /*
         echo '<pre>'; print_r($var); echo '</pre>';
         echo "<br>================================</br>";
         echo '<pre>'; var_dump($var); echo '</pre>';
+        */
     }
 
 

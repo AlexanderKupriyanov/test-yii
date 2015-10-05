@@ -15,6 +15,7 @@
 class TblProfile extends CActiveRecord
 {
     public $verifyCode;
+    //public $photos;
 
 	/**
 	 * @return string the associated database table name
@@ -38,9 +39,20 @@ class TblProfile extends CActiveRecord
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
 			array('id, user_id, gender, website', 'safe', 'on'=>'search'),
-            array('verifyCode', 'captcha', 'allowEmpty'=>!CCaptcha::checkRequirements()),
-		);
+            array('verifyCode', 'captcha', 'allowEmpty'=>(!CCaptcha::checkRequirements() || Yii::app()->user->name == 'admin'), 'on' => 'create'),
+            //array('photos', 'file', 'allowEmpty'=>false, 'types'=>'jpg, png, gif, pdf'),
+        );
 	}
+
+    public function behaviors(){
+        return array(
+            'CTimestampBehavior' => array(
+                'class' => 'zii.behaviors.CTimestampBehavior',
+                'createAttribute' => 'create_tm',
+                'updateAttribute' => 'update_tm',
+            )
+        );
+    }
 
     public function getGenderOptions () {
         return array (
@@ -58,6 +70,7 @@ class TblProfile extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
+            'photos'=>array(self::HAS_MANY, 'TblProfilePhotos', 'profile_id'),
 		);
 	}
 
